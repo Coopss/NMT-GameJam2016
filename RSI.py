@@ -217,7 +217,6 @@ class Bullet(pygame.sprite.Sprite):
         self.damage = damage
         self.last_update = pygame.time.get_ticks()
         self.death_time = 99999
-        #changed from 4000 v1.31
 
     def death(self):
         now = pygame.time.get_ticks()
@@ -278,7 +277,7 @@ class Missile(pygame.sprite.Sprite):
         # Attributes
         self.damage = damage
         self.last_update = pygame.time.get_ticks()
-        self.death_time = 10000
+        self.death_time = 99999
         self.speedx = 5
         self.speedy = 5
         self.offsetx = 0
