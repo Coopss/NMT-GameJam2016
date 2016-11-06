@@ -303,8 +303,11 @@ class Missile(pygame.sprite.Sprite):
 
     def move(self):
         self.find_nearest_enemy()
-        self.rect.y += self.speedy * abs(self.offsety / self.offsetx)
-        self.rect.x += self.speedx * (self.offsetx / self.offsety)
+        try:
+            self.rect.y += self.speedy * abs(self.offsety / self.offsetx)
+            self.rect.x += self.speedx * self.offsetx / self.offsety
+        except:
+            pass
 
     def update(self):
         global SCORE
@@ -364,8 +367,11 @@ class EnemyMissile(pygame.sprite.Sprite):
 
     def move(self):
         self.find_nearest_enemy()
-        self.rect.y += self.speedy * abs(self.offsety / self.offsetx)
-        self.rect.x += self.speedx * (self.offsetx / self.offsety)
+        try:
+            self.rect.y += self.speedy * abs(self.offsety / self.offsetx)
+            self.rect.x += self.speedx * (self.offsetx / self.offsety)
+        except:
+            pass
 
     def update(self):
         self.check_bounds()
