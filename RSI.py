@@ -1,4 +1,4 @@
-import sys, pygame, random, string, math
+import sys, pygame, random, string, math, os
 
 width, height = 1920, 1080
 size = width, height
@@ -53,10 +53,20 @@ fighter_death_sound = pygame.mixer.Sound('assets/fighterdead.wav')
 fighter_death_sound.set_volume(0.5)
 ship_shoot = pygame.mixer.Sound('assets/laser5.wav')
 ship_shoot.set_volume(0.1)
+missile_shoot = pygame.mixer.Sound('assets/missilelaunch.wav')
+missile_shoot.set_volume(0.1)
 laser_shoot = pygame.mixer.Sound('assets/laser.wav')
 laser_shoot.set_volume(0.1)
 low_hp = pygame.mixer.Sound('assets/hullalarm.wav')
 low_hp.set_volume(0.1)
+button_press = pygame.mixer.Sound('assets/option1.wav')
+button_press.set_volume(0.1)
+error_sound = pygame.mixer.Sound('assets/option2.wav')
+error_sound.set_volume(0.5)
+ship_place = pygame.mixer.Sound('assets/shipplace.wav')
+ship_place.set_volume(0.3)
+heal_sound = pygame.mixer.Sound('assets/healthship.wav')
+heal_sound.set_volume(0.3)
 
 fighter_img = 'assets/fightership.png'
 healer_img = 'assets/healship.png'
@@ -68,6 +78,12 @@ enemy_fighter_img = 'assets/enemyfighter.png'
 enemy_turret_img = 'assets/turret.png'
 enemy_missile_turret_img = 'assets/missileturret.png'
 
+explosions = []
+for i in range (1,4):
+    expl = pygame.mixer.Sound('assets/explosion' + str(i) + '.wav')
+    expl.set_volume(0.5)
+    explosions.append(expl)
+explosions.append(fighter_death_sound)
 pygame.mixer.music.load('assets/space.ogg')
 pygame.mixer.music.play(loops = -1)
 pygame.mixer.music.set_volume(0.3)
@@ -431,6 +447,8 @@ class DeathAnim(pygame.sprite.Sprite):
         self.size = size
         self.image = explosion_anim[self.size][0]
         self.rect = self.image.get_rect()
+        self.sound = explosions[random.randint(0,3)]
+        self.sound.play()
         self.rect.center = center
         self.frame = 0
         self.last_update = pygame.time.get_ticks()
@@ -507,7 +525,6 @@ class EnemyFighter(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(enemy_fighter_img)
         self.rect = self.image.get_rect()
-
         # Attributes
         self.speedy = -1
         self.max_health = 100
@@ -523,7 +540,6 @@ class EnemyFighter(pygame.sprite.Sprite):
         global SCORE
         hits = pygame.sprite.spritecollide(self, friendly_ship_sprites, False)
         for hit in hits:
-            fighter_death_sound.play()
             hit.health -= self.health
             SCORE += self.health
             death = DeathAnim(self.rect.center, 'lg2')
@@ -543,7 +559,6 @@ class EnemyFighter(pygame.sprite.Sprite):
     def check_death(self):
         self.check_collision()
         if (self.health <= 0):
-            fighter_death_sound.play()
             death = DeathAnim(self.rect.center, 'sm2')
             all_sprites.add(death)
             player.money += self.killValue
@@ -590,7 +605,6 @@ class FighterShip(pygame.sprite.Sprite):
         global SCORE
         hits = pygame.sprite.spritecollide(self, enemy_sprites, False)
         for hit in hits:
-            fighter_death_sound.play()
             hit.health -= self.health
             SCORE += self.health
             death = DeathAnim(self.rect.center, 'lg2')
@@ -599,7 +613,6 @@ class FighterShip(pygame.sprite.Sprite):
 
         hits = pygame.sprite.spritecollide(self, enemy_planet_sprite, False)
         for hit in hits:
-            fighter_death_sound.play()
             hit.health -= self.health
             SCORE += self.health
             death = DeathAnim(self.rect.center, 'lg2')
@@ -617,10 +630,8 @@ class FighterShip(pygame.sprite.Sprite):
             bullet_sprites.add(new_bullet)
 
     def check_death(self):
-
         self.check_collision()
         if (self.health <= 0):
-            fighter_death_sound.play()
             death = DeathAnim(self.rect.center, 'sm2')
             all_sprites.add(death)
             self.kill()
@@ -666,7 +677,6 @@ class MissileShip(pygame.sprite.Sprite):
         global SCORE
         hits = pygame.sprite.spritecollide(self, enemy_sprites, False)
         for hit in hits:
-            fighter_death_sound.play()
             hit.health -= self.health
             SCORE += self.health
             death = DeathAnim(self.rect.center, 'lg2')
@@ -675,7 +685,6 @@ class MissileShip(pygame.sprite.Sprite):
 
         hits = pygame.sprite.spritecollide(self, enemy_planet_sprite, False)
         for hit in hits:
-            fighter_death_sound.play()
             hit.health -= self.health
             SCORE += self.health
             death = DeathAnim(self.rect.center, 'lg2')
@@ -685,9 +694,9 @@ class MissileShip(pygame.sprite.Sprite):
     def shoot(self):
         now = pygame.time.get_ticks()
         if now - self.last_shot > self.firingspeed:
+            missile_shoot.play()
             self.last_shot = now
             new_bullet = Missile(self.damage)
-            ship_shoot.play()
             new_bullet.rect.center = (self.rect.midbottom)
             all_sprites.add(new_bullet)
             bullet_sprites.add(new_bullet)
@@ -695,7 +704,6 @@ class MissileShip(pygame.sprite.Sprite):
     def check_death(self):
         self.check_collision()
         if (self.health <= 0):
-            fighter_death_sound.play()
             death = DeathAnim(self.rect.center, 'sm2')
             all_sprites.add(death)
             self.kill()
@@ -740,7 +748,6 @@ class LaserShip(pygame.sprite.Sprite):
         global SCORE
         hits = pygame.sprite.spritecollide(self, enemy_sprites, False)
         for hit in hits:
-            fighter_death_sound.play()
             hit.health -= self.health
             SCORE += self.health
             death = DeathAnim(self.rect.center, 'lg2')
@@ -749,7 +756,6 @@ class LaserShip(pygame.sprite.Sprite):
 
         hits = pygame.sprite.spritecollide(self, enemy_planet_sprite, False)
         for hit in hits:
-            fighter_death_sound.play()
             hit.health -= self.health
             SCORE += self.health
             death = DeathAnim(self.rect.center, 'lg2')
@@ -770,7 +776,6 @@ class LaserShip(pygame.sprite.Sprite):
     def check_death(self):
         self.check_collision()
         if (self.health <= 0):
-            fighter_death_sound.play()
             death = DeathAnim(self.rect.center, 'sm2')
             all_sprites.add(death)
             self.kill()
@@ -895,6 +900,7 @@ class HealShip(pygame.sprite.Sprite):
         if now - self.last_shot > self.firingspeed:
             self.last_shot = now
             inac = 18
+            heal_sound.play()
             for i in range(0,3):
                 new_bullet = HealBullet(-inac if i == 0 else 0 if i == 1 else inac, 25)
                 new_bullet.rect.center = (self.rect.midbottom)
@@ -1024,9 +1030,11 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         global HEALTH_MULTIPLIER, PASSIVE_MONEY_MULTIPLIER
-        self.image = pygame.image.load("assets/mothership.png")
+        self.image = pygame.image.load("assets/mothership3.png")
+        # self.image = pygame.transform.scale(self.image, (1028, 67))
         self.rect = self.image.get_rect()
-        self.rect.center = (width / (48/29), 50)
+        # self.rect.center = (width / (48/29), 50)
+        self.rect.center = (width / (48/29), 85)
 
         # Attributes
         self.max_health = 20000
@@ -1034,13 +1042,22 @@ class Player(pygame.sprite.Sprite):
         self.healthbar = Healthbar(self)
         all_sprites.add(self.healthbar)
         self.prevhm = PASSIVE_MONEY_MULTIPLIER
-        self.money = 2000
+        self.money = 200000
         self.last_money = pygame.time.get_ticks()
+        self.last_heal = pygame.time.get_ticks()
+        self.heal_rate = 250 #4 heals per sec
+
+    def self_heal(self):
+        global EFFECTIVE_HEALING
+        now = pygame.time.get_ticks()
+        if now - self.last_heal > self.heal_rate:
+            self.last_money = now
+            self.health += 1 + EFFECTIVE_HEALING
 
     def health_fix(self):
         global HEALTH_MULTIPLIER
-        self.max_health + HEALTH_MULTIPLIER*5000
-        self.health + HEALTH_MULTIPLIER*5000
+        self.max_health += HEALTH_MULTIPLIER*5000
+        self.health += HEALTH_MULTIPLIER*5000
         self.prevhm = HEALTH_MULTIPLIER
 
     def get_money(self):
@@ -1057,12 +1074,13 @@ class Player(pygame.sprite.Sprite):
             self.health_fix()
         if (self.health / self.max_health <= 0.10):
             low_hp.play()
+        if self.health < self.max_health:
+            self.self_heal()
 
 # Init enemy_planet_sprite
 earth = Earth()
 all_sprites.add(earth)
 enemy_planet_sprite.add(earth)
-
 
 not_enough_money = smallfont.render("NOT ENOUGH MONEY", 1, (255,0,0))
 not_high_enough_level2 = smallfont.render("REQUIRES LEVEL 2 TO PURCHASE", 1, (255,0,0))
@@ -1124,14 +1142,17 @@ while running:
                 if SHIP_STATE[0][1] == True:
                     if player.money < sprite.price:
                         cur_error = not_enough_money
+                        error_sound.play()
                         error = True
                     else:
                         player.money -= sprite.price
                         all_sprites.add(sprite)
                         ship_sprites.add(sprite)
+                        ship_place.play()
                 else:
                     if player.money < sprite.unlock_price:
                         cur_error = not_enough_money
+                        error_sound.play()
                         error = True
                     else:
                         SHIP_STATE[0][1] = True
@@ -1142,20 +1163,24 @@ while running:
                     if SHIP_STATE[1][1] == True:
                         if player.money < sprite.price:
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             player.money -= sprite.price
                             all_sprites.add(sprite)
                             ship_sprites.add(sprite)
+                            ship_place.play()
                     else:
                         if player.money < sprite.unlock_price:
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             SHIP_STATE[1][1] = True
                             player.money -= sprite.unlock_price
                 else:
                     cur_error = not_high_enough_level2
+                    error_sound.play()
 
             if event.key == pygame.K_e:
                 sprite = HealShip()
@@ -1163,40 +1188,48 @@ while running:
                     if SHIP_STATE[2][1] == True:
                         if player.money < sprite.price:
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             player.money -= sprite.price
                             all_sprites.add(sprite)
                             ship_sprites.add(sprite)
+                            ship_place.play()
                     else:
                         if player.money < sprite.unlock_price:
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             SHIP_STATE[2][1] = True
                             player.money -= sprite.unlock_price
                 else:
                     cur_error = not_high_enough_level3
+                    error_sound.play()
             if event.key == pygame.K_r:
                 sprite = LaserShip()
                 if earth.level >= 4:
                     if SHIP_STATE[3][1] == True:
                         if player.money < sprite.price:
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             player.money -= sprite.price
                             all_sprites.add(sprite)
                             ship_sprites.add(sprite)
+                            ship_place.play()
                     else:
                         if player.money < sprite.unlock_price:
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             SHIP_STATE[3][1] = True
                             player.money -= sprite.unlock_price
                 else:
                     cur_error = not_high_enough_level4
+                    error_sound.play()
 
             if event.key == pygame.K_t:
                 sprite = MissileShip()
@@ -1204,20 +1237,24 @@ while running:
                     if SHIP_STATE[4][1] == True:
                         if player.money < sprite.price:
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             player.money -= sprite.price
                             all_sprites.add(sprite)
                             ship_sprites.add(sprite)
+                            ship_place.play()
                     else:
                         if player.money < sprite.unlock_price:
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             SHIP_STATE[4][1] = True
                             player.money -= sprite.unlock_price
                 else:
                     cur_error = not_high_enough_level5
+                    error_sound.play()
             if event.key == pygame.K_p:
                 if STATE == False:
                     STATE = True
@@ -1225,11 +1262,13 @@ while running:
                     STATE = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
+            button_press.play()
             for button in buttons:
                 if buttonDict[button][1].collidepoint(event.pos):
                     if button == 'Damage':
                         if player.money < (1500 + DAMAGE*2000):
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             player.money -= 1500 + DAMAGE*2000
@@ -1237,6 +1276,7 @@ while running:
                     elif button == 'Accuracy':
                         if player.money < (1500 + ACCURACY*500):
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             player.money -= 1500 + ACCURACY*500
@@ -1244,6 +1284,7 @@ while running:
                     elif button == 'Firing Speed':
                         if player.money < (1500 + FIRING_SPEED*3000):
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             player.money -= 1500 + FIRING_SPEED*3000
@@ -1251,6 +1292,7 @@ while running:
                     elif button == 'Health Multiplier':
                         if player.money < (500 + HEALTH_MULTIPLIER*1000):
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             player.money -= 500 + HEALTH_MULTIPLIER*1000
@@ -1258,6 +1300,7 @@ while running:
                     elif button == 'Healing Effectiveness':
                         if player.money < (500 + EFFECTIVE_HEALING*500):
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             player.money -= 500 + EFFECTIVE_HEALING*500
@@ -1265,6 +1308,7 @@ while running:
                     elif button == 'Passive Income Multiplier':
                         if player.money < (500 + PASSIVE_MONEY_MULTIPLIER*200):
                             cur_error = not_enough_money
+                            error_sound.play()
                             error = True
                         else:
                             player.money -= 500 + PASSIVE_MONEY_MULTIPLIER*200
