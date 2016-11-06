@@ -1028,8 +1028,7 @@ class Player(pygame.sprite.Sprite):
         self.healthbar = Healthbar(self)
         all_sprites.add(self.healthbar)
         self.prevhm = PASSIVE_MONEY_MULTIPLIER
-        self.money = 2000000
-        #self.money = 2000
+        self.money = 2000
         self.last_money = pygame.time.get_ticks()
 
     def health_fix(self):
@@ -1195,7 +1194,7 @@ while running:
 
             if event.key == pygame.K_t:
                 sprite = MissileShip()
-                if earth.level >= 1:
+                if earth.level >= 5:
                     if SHIP_STATE[4][1] == True:
                         if player.money < sprite.price:
                             cur_error = not_enough_money
