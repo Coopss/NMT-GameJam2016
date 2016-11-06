@@ -141,9 +141,6 @@ class Earth(pygame.sprite.Sprite):
         self.level = 0
 
     def spawn(self):
-        # global FIRING_SPEED, DAMAGE, ACCURACY, HEALTH_MULTIPLIER, EFFECTIVE_HEALING, PASSIVE_MONEY_MULTIPLIER
-        # progressionlevel = int((FIRING_SPEED + DAMAGE + ACCURACY + HEALTH_MULTIPLIER + EFFECTIVE_HEALING + PASSIVE_MONEY_MULTIPLIER) / 6)
-
         if len(enemy_station_sprites) == 0:
             player.money += 2000 * self.level
             self.level += 1
@@ -593,7 +590,7 @@ class FighterShip(pygame.sprite.Sprite):
         self.speedy = 1
         self.max_health = 100 + HEALTH_MULTIPLIER*15
         self.health = self.max_health
-        self.price = 150 + (earth.level-1) * 100
+        self.price = 150 + (earth.level-1) * 45
         self.unlock_price = 300
         self.firingspeed = 500 - FIRING_SPEED * 25
         self.damage = 25 + DAMAGE * 5
@@ -665,7 +662,7 @@ class MissileShip(pygame.sprite.Sprite):
         self.speedy = 1
         self.max_health = 200 + HEALTH_MULTIPLIER*20
         self.health = self.max_health
-        self.price = 600 + (earth.level-5) * 1000
+        self.price = 600 + (earth.level-5) * 180
         self.unlock_price = 1200
         self.firingspeed = 1333 - FIRING_SPEED * 20
         self.damage = 150 + DAMAGE * 30
@@ -735,9 +732,9 @@ class LaserShip(pygame.sprite.Sprite):
         self.speedy = 1
         self.max_health = 100 + HEALTH_MULTIPLIER
         self.health = self.max_health
-        self.price = 1000 + (earth.level-4) * 500
+        self.price = 1000 + (earth.level-4) * 100
         self.unlock_price = 2000
-        self.firingspeed = 4000 - FIRING_SPEED * 200
+        self.firingspeed = 4000 - FIRING_SPEED * 600
         self.laserlifetime = 500
         self.damage = 75 + DAMAGE * 7
         self.last_shot = pygame.time.get_ticks()
@@ -806,9 +803,9 @@ class ShieldShip(pygame.sprite.Sprite):
             self.rect.center = (mouse)
         # Attributes
         self.speedy = 1
-        self.max_health = 600 + HEALTH_MULTIPLIER*100
+        self.max_health = 600 + HEALTH_MULTIPLIER*200
         self.health = self.max_health
-        self.price = 350 + (earth.level-2) * 150
+        self.price = 350 + (earth.level-2) * 75
         self.unlock_price = 700
         self.healthbar = Healthbar(self)
         all_sprites.add(self.healthbar)
@@ -862,7 +859,7 @@ class HealShip(pygame.sprite.Sprite):
         self.speedy = 1
         self.max_health = 25 + HEALTH_MULTIPLIER*4
         self.health = self.max_health
-        self.price = 600 + (earth.level-3) * 300
+        self.price = 600 + (earth.level-3) * 180
         self.unlock_price = 1200
         self.firingspeed = 1500 - FIRING_SPEED*30
         self.last_shot = pygame.time.get_ticks()
@@ -1041,18 +1038,18 @@ class Player(pygame.sprite.Sprite):
         self.health = self.max_health
         self.healthbar = Healthbar(self)
         all_sprites.add(self.healthbar)
-        self.prevhm = PASSIVE_MONEY_MULTIPLIER
+        self.prevhm = HEALTH_MULTIPLIER
         self.money = 2000
         self.last_money = pygame.time.get_ticks()
         self.last_heal = pygame.time.get_ticks()
-        self.heal_rate = 250 #4 heals per sec
+        self.heal_rate = 100 #4 heals per sec
 
     def self_heal(self):
         global EFFECTIVE_HEALING
         now = pygame.time.get_ticks()
         if now - self.last_heal > self.heal_rate:
-            self.last_money = now
-            self.health += 1 + EFFECTIVE_HEALING
+            self.last_heal = now
+            self.health += 5 + EFFECTIVE_HEALING
 
     def health_fix(self):
         global HEALTH_MULTIPLIER
@@ -1061,9 +1058,9 @@ class Player(pygame.sprite.Sprite):
         self.prevhm = HEALTH_MULTIPLIER
 
     def get_money(self):
-        self.rate = 100
+        global PASSIVE_MONEY_MULTIPLIER
         now = pygame.time.get_ticks()
-        if now - self.last_money > self.rate:
+        if now - self.last_money > 100:
             self.last_money = now
             self.money += 5 + PASSIVE_MONEY_MULTIPLIER*2
 
@@ -1320,7 +1317,7 @@ while running:
     #Update
     if STATE == True:
         all_sprites.update()
-        player.update()
+        #player.get_money()
         status = False
     else:
         cur_status = game_is_paused
