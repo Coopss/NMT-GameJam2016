@@ -1,8 +1,6 @@
-CC=gcc
-CFLAGS=-g -Wall
-MATH=-lm
+CC=python3
 
-all: lab8
+all: RSI
 
-lab8: lab8.c
-	$(CC) $(CFLAGS) lab8.c -o lab8 $(MATH)
+RSI: RSI.py
+	$(CC) RSI.py

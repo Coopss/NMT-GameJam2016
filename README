@@ -1,1 +1,35 @@
-# GameJam2016
+REVERSE SPACE INVADERS
+
+Game:
+        Play as an alien mother-ship as you spawn in various ships in hopes to
+        destroy the puny humans. As you progress, the levels become increasingly
+        difficult and the prices of ships gets higher and higher.
+
+How to play:
+        The game begins paused and starts off with one enemy. Be warned, the
+        levels get increasingly more difficult as you kill more enemies. You
+        can buy the ships listed in the menu on the left-hand side of the screen
+        by using 'q', 'w', 'e', 'r', or 't'; the first five levels unlock each
+        ship. Finally, use 'p' to pause the game and strategize a formation to
+        kill the humans!
+
+Ships:
+        Allied:
+                1. Fighter
+                2. Wall
+                3. Healer
+                4. Laser
+                5. Missile
+
+        Enemy
+                1. Defense Gun
+                2. Shield wall
+                3. Enemy Fighter
+
+Future Improvements:
+        - Move the sprite updates to a multi-threaded process to reduce update
+        lag in later stages.
+        - Add an end, not just go until you die.
+        - High score list
+        - Make ships so they can not be spawned directly overlapping each other
+        - Background movement at the end of each level.
