@@ -966,11 +966,15 @@ class EnemyGun(pygame.sprite.Sprite):
 class EnemyShieldStation(pygame.sprite.Sprite):
     def __init__(self, level):
         pygame.sprite.Sprite.__init__(self)
+        global DAMAGE
         self.image = pygame.image.load(shield_station_img)
         self.rect = self.image.get_rect()
         self.rect.center = (width / 2, height - 200)
         # Attributes
-        self.max_health = 2000 + level * 200
+        if level >= 10:
+            self.max_health = 2000 + 2000 * (level + DAMAGE)
+        else:
+            self.max_health = 2000 + level * 200
         self.health = self.max_health
         self.killValue = 2000  + level * 150
         self.healthbar = Healthbar(self)
