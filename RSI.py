@@ -203,7 +203,8 @@ class Bullet(pygame.sprite.Sprite):
         self.speedx = random.randint(-self.bulletaccuracy,self.bulletaccuracy)
         self.damage = damage
         self.last_update = pygame.time.get_ticks()
-        self.death_time = 4000
+        self.death_time = 99999
+        #changed from 4000 v1.31
 
     def death(self):
         now = pygame.time.get_ticks()
@@ -571,7 +572,7 @@ class FighterShip(pygame.sprite.Sprite):
         self.speedy = 1
         self.max_health = 100 + HEALTH_MULTIPLIER*15
         self.health = self.max_health
-        self.price = 150
+        self.price = 150 + (earth.level-1) * 100
         self.unlock_price = 300
         self.firingspeed = 500 - FIRING_SPEED * 25
         self.damage = 25 + DAMAGE * 5
@@ -647,7 +648,7 @@ class MissileShip(pygame.sprite.Sprite):
         self.speedy = 1
         self.max_health = 200 + HEALTH_MULTIPLIER*20
         self.health = self.max_health
-        self.price = 600
+        self.price = 600 + (earth.level-5) * 1000
         self.unlock_price = 1200
         self.firingspeed = 1333 - FIRING_SPEED * 20
         self.damage = 150 + DAMAGE * 30
@@ -720,7 +721,7 @@ class LaserShip(pygame.sprite.Sprite):
         self.speedy = 1
         self.max_health = 100 + HEALTH_MULTIPLIER
         self.health = self.max_health
-        self.price = 1000
+        self.price = 1000 + (earth.level-4) * 500
         self.unlock_price = 2000
         self.firingspeed = 4000 - FIRING_SPEED * 200
         self.laserlifetime = 500
@@ -796,7 +797,7 @@ class ShieldShip(pygame.sprite.Sprite):
         self.speedy = 1
         self.max_health = 600 + HEALTH_MULTIPLIER*100
         self.health = self.max_health
-        self.price = 350
+        self.price = 350 + (earth.level-2) * 150
         self.unlock_price = 700
         self.healthbar = Healthbar(self)
         all_sprites.add(self.healthbar)
@@ -850,7 +851,7 @@ class HealShip(pygame.sprite.Sprite):
         self.speedy = 1
         self.max_health = 25 + HEALTH_MULTIPLIER*4
         self.health = self.max_health
-        self.price = 600
+        self.price = 600 + (earth.level-3) * 300
         self.unlock_price = 1200
         self.firingspeed = 1500 - FIRING_SPEED*30
         self.last_shot = pygame.time.get_ticks()
@@ -1027,7 +1028,8 @@ class Player(pygame.sprite.Sprite):
         self.healthbar = Healthbar(self)
         all_sprites.add(self.healthbar)
         self.prevhm = PASSIVE_MONEY_MULTIPLIER
-        self.money = 2000
+        self.money = 2000000
+        #self.money = 2000
         self.last_money = pygame.time.get_ticks()
 
     def health_fix(self):
@@ -1051,9 +1053,7 @@ class Player(pygame.sprite.Sprite):
         if (self.health / self.max_health <= 0.10):
             low_hp.play()
 
-
 # Init enemy_planet_sprite
-
 earth = Earth()
 all_sprites.add(earth)
 enemy_planet_sprite.add(earth)
@@ -1195,7 +1195,7 @@ while running:
 
             if event.key == pygame.K_t:
                 sprite = MissileShip()
-                if earth.level >= 5:
+                if earth.level >= 1:
                     if SHIP_STATE[4][1] == True:
                         if player.money < sprite.price:
                             cur_error = not_enough_money
