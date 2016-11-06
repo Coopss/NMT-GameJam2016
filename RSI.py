@@ -1042,7 +1042,7 @@ class Player(pygame.sprite.Sprite):
         self.healthbar = Healthbar(self)
         all_sprites.add(self.healthbar)
         self.prevhm = PASSIVE_MONEY_MULTIPLIER
-        self.money = 200000
+        self.money = 2000
         self.last_money = pygame.time.get_ticks()
         self.last_heal = pygame.time.get_ticks()
         self.heal_rate = 250 #4 heals per sec
