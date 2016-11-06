@@ -971,7 +971,7 @@ class EnemyShieldStation(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (width / 2, height - 200)
         # Attributes
-        if level >= 10:
+        if earth.level >= 10:
             self.max_health = 2000 + 2000 * (level + DAMAGE)
         else:
             self.max_health = 2000 + level * 200
