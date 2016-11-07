@@ -1260,6 +1260,8 @@ while running:
                     STATE = True
                 elif STATE == True:
                     STATE = False
+            if event.key == pygame.K_b:
+                player.money += 10000
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             button_press.play()
